@@ -27,4 +27,4 @@ Because TOPO has zero backend dependencies, running it is incredibly simple.
 ### Option 2: Run Locally
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/yourusername/topo-explorer.git](https://github.com/yourusername/topo-explorer.git)
+   git clone https://github.com/imprayush892/topo-elevation-explorer.git
