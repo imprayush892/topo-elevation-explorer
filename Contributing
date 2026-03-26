@@ -1,0 +1,35 @@
+# Contributing to TOPO
+
+First off, thanks for taking the time to contribute! TOPO is an open-source tool aimed at democratizing access to spatial data for designers and developers. 
+
+## How Can I Contribute?
+
+### 🐛 Reporting Bugs
+If you find a bug, please create an issue in the repository. Include:
+* Your operating system and browser version.
+* A clear description of the issue.
+* Steps to reproduce the bug.
+* Any relevant screenshots or console error logs.
+
+### ✨ Suggesting Enhancements
+Have an idea for a new feature? We'd love to hear it. Create an issue and label it as an `enhancement`. Describe the feature, why it would be useful, and how you envision it working.
+
+### 💻 Pull Requests
+We actively welcome pull requests. 
+1. Fork the repo and create your branch from `main`.
+2. Keep your commits clean and descriptive.
+3. If you've added new features, ensure they don't break the existing export pipelines (test STL, OBJ, and DXF outputs).
+4. Update the `README.md` or `TECHNICAL_DOCS.md` with details of changes to the interface or architecture.
+
+## Development Setup
+TOPO is a vanilla HTML/JS/CSS project. There are no build tools, bundlers, or package managers required. 
+
+To start developing:
+1. Clone your fork.
+2. Open `index.html` in your editor.
+3. Serve locally to test (e.g., using VS Code Live Server).
+
+## Code Style
+* Keep functions modular. The heavy lifting (like `exportDXF` and `exportMesh`) should remain isolated from UI logic.
+* Use standard ES6 syntax.
+* Minimize external dependencies. A core philosophy of TOPO is remaining lightweight.
