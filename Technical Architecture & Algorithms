@@ -1,0 +1,32 @@
+# Technical Architecture & Algorithms
+
+This document outlines the core algorithms and data pipelines powering TOPO. The primary technical achievement of this project is executing complex geographic data processing entirely client-side without degrading browser performance.
+
+---
+
+## 1. Elevation Data Pipeline
+
+TOPO utilizes **Mapzen Terrarium DEM** tiles. Unlike standard image tiles, Terrarium tiles encode elevation data directly into the RGB channels of a PNG image.
+
+* **Decoding Formula:** $Elevation (meters) = (R \times 256) + G + (B / 256) - 32768$
+* **Implementation:** When an export is triggered, the application calculates the required tile coordinates (slippy map format), fetches the relevant images, paints them to an invisible HTML5 `<canvas>`, and reads the `ImageData` array to reconstruct a dense 3D floating-point grid.
+
+## 2. 3D Mesh Generation (STL/OBJ)
+
+To convert the elevation grid into a solid 3D model, the application generates a custom triangulated mesh.
+
+* **Surface Triangulation:** The grid is iterated over in 2x2 square patches. Each patch is split into two triangles to form the top terrain surface.
+* **Manifold Solid Generation:** For 3D printing (`.STL`), a mesh must be "watertight." The algorithm automatically extrudes walls downward from the grid's perimeter and caps the bottom at $Z = 0$.
+* **Binary STL Encoding:** To manage memory and allow fast downloads for high-resolution areas, the `.STL` is written as a raw `ArrayBuffer`. Normal vectors are calculated dynamically using the cross-product of adjacent vertex edges before being pushed to the buffer.
+
+## 3. Vector Contours (Marching Squares)
+
+Contour lines are extracted from the elevation grid using the **Marching Squares** algorithm.
+
+* **Algorithm:** The grid is processed cell-by-cell. Each cell's corners are evaluated against a target elevation threshold. Linear interpolation is used to find the exact sub-pixel coordinate where the contour intersects the cell edges.
+* **DXF Compilation:** The resulting line segments are traced and connected. The output is compiled into a strict **AC1009 R12 DXF** format string.
+* **Compatibility Adjustments:** To ensure maximum compatibility with CAD software (specifically ODA-based engines like Rhino/Grasshopper), the DXF strictly includes `HEADER`, `TABLES` (including `VPORT` and `APPID`), `BLOCKS`, and simple `LINE` entities rather than complex polylines.
+
+## 4. Real-Time Overlays
+
+* **Heatmap:** Utilizes MapLibre's `queryTerrainElevation` to sample the visible viewport, converts the elevations to a specific color palette, and updates a custom `ImageSource` canvas.
