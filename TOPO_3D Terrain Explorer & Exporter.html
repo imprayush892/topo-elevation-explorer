@@ -1,256 +1,428 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>TOPO — 3D Terrain Explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Unbounded:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 button{background:none;border:none;cursor:pointer;font-family:inherit}
 input,select{font-family:inherit;background:none;border:none;outline:none}
 
-:root{
-  --void:#010209;--surface:rgba(3,4,16,0.86);
-  --lift:rgba(255,255,255,0.03);--lift2:rgba(255,255,255,0.06);
-  --b0:rgba(255,255,255,0.04);--b1:rgba(255,255,255,0.08);
-  --b2:rgba(255,255,255,0.16);--b3:rgba(255,255,255,0.28);
-  --cyan:#00e5ff;--pink:#ff2d78;--lime:#39ff14;
-  --purple:#a259ff;--amber:#ffb700;--orange:#ff6b00;
-  --text:#dde3f8;--muted:rgba(221,227,248,0.4);--dim:rgba(221,227,248,0.16);
-  --gcyan:0 0 14px rgba(0,229,255,0.45),0 0 40px rgba(0,229,255,0.12);
-  --gpink:0 0 14px rgba(255,45,120,0.45),0 0 40px rgba(255,45,120,0.12);
-  --glime:0 0 12px rgba(57,255,20,0.5),0 0 30px rgba(57,255,20,0.12);
-  --gpurple:0 0 14px rgba(162,89,255,0.45),0 0 36px rgba(162,89,255,0.1);
-  --gamber:0 0 14px rgba(255,183,0,0.5),0 0 40px rgba(255,183,0,0.12);
-  --fh:'Unbounded',sans-serif;--fu:'Barlow Condensed',sans-serif;--fm:'DM Mono',monospace;
-  --blur:blur(28px) saturate(180%);--r:13px;--rs:9px;--rxs:6px;
+/* ══════════════════════════════════════════════
+   DARK THEME — "The Void"
+══════════════════════════════════════════════ */
+[data-theme="dark"]{
+  --void:#010209;
+  --surface:rgba(15,15,20,0.7);
+  --surface-solid:#0f0f14;
+  --lift:rgba(255,255,255,0.03);
+  --lift2:rgba(255,255,255,0.06);
+  --b0:rgba(255,255,255,0.04);
+  --b1:rgba(255,255,255,0.08);
+  --b2:rgba(255,255,255,0.16);
+  --b3:rgba(255,255,255,0.28);
+  --ochre:#FFB800;
+  --ochre-dim:rgba(255,184,0,0.4);
+  --ochre-bg:rgba(255,184,0,0.07);
+  --ochre-border:rgba(255,184,0,0.35);
+  --verdigris:#10B981;
+  --verd-dim:rgba(16,185,129,0.2);
+  --verd-bright:rgba(16,185,129,0.8);
+  --pink:#E11D48;
+  --pink-dim:rgba(225,29,72,0.35);
+  --purple:#a259ff;
+  --lime:#39ff14;
+  --text:#fafafa;
+  --text-sec:rgba(250,250,250,0.6);
+  --muted:rgba(250,250,250,0.38);
+  --dim:rgba(250,250,250,0.16);
+  --gochre:0 0 10px rgba(255,184,0,0.5),0 0 30px rgba(255,184,0,0.12);
+  --gverd:0 0 10px rgba(16,185,129,0.5),0 0 28px rgba(16,185,129,0.1);
+  --gpink:0 0 12px rgba(225,29,72,0.45),0 0 30px rgba(225,29,72,0.1);
+  --gpurple:0 0 12px rgba(162,89,255,0.45),0 0 30px rgba(162,89,255,0.1);
+  --vig-outer:rgba(1,2,9,0.8);
+  --scan-color:rgba(255,255,255,0.01);
+  --modal-bg:rgba(1,2,9,0.75);
+  --track:#27272a;
+  --slider-track:rgba(255,255,255,0.09);
+  --map-sky-inner:rgba(1,2,12,1);
+  --map-sky-outer:rgba(1,1,6,1);
+  --logo-from:#FFB800;
+  --logo-to:#E11D48;
 }
-html,body{width:100%;height:100%;background:var(--void);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* ══════════════════════════════════════════════
+   LIGHT THEME — "The Studio"
+══════════════════════════════════════════════ */
+[data-theme="light"]{
+  --void:#f0f0f2;
+  --surface:rgba(255,255,255,0.82);
+  --surface-solid:#ffffff;
+  --lift:rgba(0,0,0,0.03);
+  --lift2:rgba(0,0,0,0.06);
+  --b0:rgba(0,0,0,0.04);
+  --b1:rgba(0,0,0,0.10);
+  --b2:rgba(0,0,0,0.18);
+  --b3:rgba(0,0,0,0.28);
+  --ochre:#D49700;
+  --ochre-dim:rgba(212,151,0,0.5);
+  --ochre-bg:rgba(212,151,0,0.08);
+  --ochre-border:rgba(212,151,0,0.4);
+  --verdigris:#059669;
+  --verd-dim:rgba(5,150,105,0.2);
+  --verd-bright:rgba(5,150,105,0.8);
+  --pink:#BE123C;
+  --pink-dim:rgba(190,18,60,0.3);
+  --purple:#7C3AED;
+  --lime:#16A34A;
+  --text:#18181b;
+  --text-sec:rgba(24,24,27,0.6);
+  --muted:rgba(24,24,27,0.42);
+  --dim:rgba(24,24,27,0.18);
+  --gochre:0 0 8px rgba(212,151,0,0.3),0 0 20px rgba(212,151,0,0.08);
+  --gverd:0 0 8px rgba(5,150,105,0.3),0 0 20px rgba(5,150,105,0.08);
+  --gpink:0 0 8px rgba(190,18,60,0.3),0 0 20px rgba(190,18,60,0.08);
+  --gpurple:0 0 8px rgba(124,58,237,0.3),0 0 20px rgba(124,58,237,0.08);
+  --vig-outer:rgba(240,240,242,0.5);
+  --scan-color:rgba(0,0,0,0.008);
+  --modal-bg:rgba(240,240,242,0.8);
+  --track:#e4e4e7;
+  --slider-track:rgba(0,0,0,0.1);
+  --map-sky-inner:rgba(200,210,230,1);
+  --map-sky-outer:rgba(180,195,220,1);
+  --logo-from:#D49700;
+  --logo-to:#BE123C;
+}
+
+:root{
+  --fm:'Geist Mono',monospace;
+  --fs:'DM Sans',sans-serif;
+  --fh:'Unbounded',sans-serif;
+  --fed:'Playfair Display',serif;
+  --blur:blur(30px) saturate(180%);
+  --r:13px;--rs:9px;--rxs:6px;
+}
+
+html,body{width:100%;height:100%;background:var(--void);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased;transition:background .5s ease,color .5s ease}
 #map{position:absolute;inset:0}
 .maplibregl-ctrl-attrib,.maplibregl-ctrl-logo{display:none!important}
 .maplibregl-canvas{outline:none}
-.glass{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--b1)}
+.glass{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--b1);transition:border-color .3s,background .5s}
+.glass:hover{border-color:var(--ochre-dim)}
+
+/* ── SVG GRAIN FILTER ── */
+.grain-overlay{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0.05;mix-blend-mode:overlay}
 
 /* ── LOADING ── */
 #loading{position:fixed;inset:0;z-index:9999;background:var(--void);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity 1.1s cubic-bezier(.4,0,.2,1),transform 1.1s cubic-bezier(.4,0,.2,1)}
 #loading.out{opacity:0;transform:scale(1.05);pointer-events:none}
-.ld-eye{font-family:var(--fm);font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--dim);animation:fup .8s ease both}
-.ld-word{font-family:var(--fh);font-weight:900;font-size:clamp(60px,14vw,110px);letter-spacing:-6px;line-height:1;background:linear-gradient(135deg,var(--cyan) 0%,#6040ff 48%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fup .8s .08s ease both}
-.ld-sub{font-family:var(--fu);font-size:12px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);animation:fup .8s .18s ease both}
-.ld-track{width:180px;height:1px;background:var(--b1);border-radius:1px;overflow:hidden;margin-top:8px;animation:fup .8s .3s ease both}
-.ld-fill{height:100%;background:linear-gradient(90deg,var(--cyan),#8040ff,var(--pink));animation:ldg 3s cubic-bezier(.4,0,.2,1) forwards}
+.ld-eye{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);animation:fup .8s ease both}
+.ld-word{font-family:var(--fh);font-weight:900;font-size:clamp(60px,14vw,110px);letter-spacing:-6px;line-height:1;background:linear-gradient(135deg,var(--logo-from) 0%,var(--logo-to) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fup .8s .08s ease both}
+.ld-sub{font-family:var(--fm);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);animation:fup .8s .18s ease both}
+.ld-track{width:180px;height:2px;background:var(--track);border-radius:1px;overflow:hidden;margin-top:8px;animation:fup .8s .3s ease both}
+.ld-fill{height:100%;background:linear-gradient(90deg,var(--ochre),var(--pink));animation:ldg 3s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes ldg{0%{width:0}55%{width:58%}100%{width:100%}}
 
 /* ── SEARCH ── */
 #search-wrap{position:absolute;top:20px;left:50%;transform:translateX(-50%);z-index:300;width:min(500px,calc(100vw - 56px))}
-#search-pill{height:48px;border-radius:40px;display:flex;align-items:center;gap:10px;padding:0 18px;border-color:rgba(0,229,255,.18);box-shadow:0 8px 36px rgba(0,0,0,.55),0 0 0 1px rgba(0,229,255,.06);transition:border-color .25s,box-shadow .25s}
-#search-pill:focus-within{border-color:rgba(0,229,255,.5);box-shadow:0 8px 36px rgba(0,0,0,.55),var(--gcyan)}
-.si-icon{font-size:13px;color:var(--cyan);opacity:.75;flex-shrink:0;font-family:var(--fm)}
-#search-input{flex:1;color:var(--text);font-family:var(--fu);font-size:16px;font-weight:500;letter-spacing:.4px}
+#search-pill{height:48px;border-radius:40px;display:flex;align-items:center;gap:10px;padding:0 18px;border-color:var(--ochre-border);box-shadow:0 8px 36px rgba(0,0,0,.35),0 0 0 1px rgba(255,184,0,.06);transition:border-color .25s,box-shadow .25s}
+#search-pill:focus-within{border-color:var(--ochre);box-shadow:0 8px 36px rgba(0,0,0,.35),var(--gochre)}
+.si-icon{font-size:13px;color:var(--ochre);opacity:.75;flex-shrink:0;font-family:var(--fm)}
+#search-input{flex:1;color:var(--text);font-family:var(--fs);font-size:15px;font-weight:500;letter-spacing:.3px;background:transparent}
 #search-input::placeholder{color:var(--muted)}
 #search-clear{font-size:11px;color:var(--muted);padding:4px;flex-shrink:0;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s,color .2s}
 #search-clear.show{opacity:1;pointer-events:all}
 #search-clear:hover{color:var(--text)}
-#search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;border-radius:var(--r);overflow:hidden;max-height:300px;overflow-y:auto;scrollbar-width:none;box-shadow:0 24px 64px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);display:none}
+#search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;border-radius:var(--r);overflow:hidden;max-height:300px;overflow-y:auto;scrollbar-width:none;box-shadow:0 24px 64px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3);display:none}
 #search-results.show{display:block}
 #search-results::-webkit-scrollbar{display:none}
 .sr-row{display:flex;align-items:flex-start;gap:12px;padding:11px 16px;cursor:pointer;border-bottom:1px solid var(--b0);transition:background .14s}
 .sr-row:last-child{border-bottom:none}
-.sr-row:hover,.sr-row.hi{background:rgba(0,229,255,.06)}
+.sr-row:hover,.sr-row.hi{background:var(--ochre-bg)}
 .sr-ico{font-size:14px;flex-shrink:0;line-height:1.5}
-.sr-name{font-family:var(--fu);font-size:14px;font-weight:600;color:var(--text);line-height:1.25}
-.sr-addr{font-family:var(--fm);font-size:9px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px}
-.sr-meta{font-family:var(--fm);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:3px}
-.sr-state{padding:18px 16px;font-family:var(--fm);font-size:10px;color:var(--muted);text-align:center}
+.sr-name{font-family:var(--fs);font-size:13px;font-weight:600;color:var(--text);line-height:1.25}
+.sr-addr{font-family:var(--fm);font-size:7px;letter-spacing:0.05em;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px}
+.sr-meta{font-family:var(--fm);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-top:3px}
+.sr-state{padding:18px 16px;font-family:var(--fm);font-size:7px;letter-spacing:0.1em;color:var(--muted);text-align:center;text-transform:uppercase}
 
-/* ── PANEL ── */
-#panel{position:absolute;top:20px;left:20px;width:264px;border-radius:var(--r);padding:16px;z-index:200;max-height:calc(100dvh - 40px);overflow-y:auto;scrollbar-width:none;box-shadow:0 32px 80px rgba(0,0,0,.7),0 8px 24px rgba(0,0,0,.4);transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s}
+/* ══════════════════════════════════════════════
+   THE COMMAND PANEL — "Glass Capsule"
+══════════════════════════════════════════════ */
+#panel{
+  position:absolute;top:20px;left:20px;
+  width:280px;border-radius:var(--r);padding:20px;
+  z-index:200;max-height:calc(100dvh - 40px);
+  overflow-y:auto;scrollbar-width:none;
+  box-shadow:0 32px 80px rgba(0,0,0,.45),0 8px 24px rgba(0,0,0,.3);
+  transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s;
+  transform-origin:left center;
+}
 #panel::-webkit-scrollbar{display:none}
-#panel.off{transform:translateX(calc(-100% - 28px));opacity:0;pointer-events:none}
+#panel.off{transform:translateX(calc(-100% - 28px)) rotateY(15deg);opacity:0;pointer-events:none}
 .p-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.p-logo{font-family:var(--fh);font-size:24px;font-weight:900;letter-spacing:-1.5px;line-height:1;background:linear-gradient(120deg,var(--cyan) 0%,#7040ff 55%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.p-tag{font-family:var(--fm);font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-top:5px}
-.p-x{width:26px;height:26px;border-radius:7px;border:1px solid var(--b1);background:var(--lift);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);cursor:pointer;transition:background .18s,color .18s;flex-shrink:0;margin-top:2px}
-.p-x:hover{background:var(--lift2);color:var(--text)}
+.p-logo{font-family:var(--fh);font-size:22px;font-weight:900;letter-spacing:-1.5px;line-height:1;background:linear-gradient(120deg,var(--logo-from) 0%,var(--logo-to) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.p-tag{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+.p-controls{display:flex;gap:5px;align-items:center;flex-shrink:0;margin-top:2px}
+.p-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--b1);background:var(--lift);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);cursor:pointer;transition:background .18s,color .18s,border-color .3s}
+.p-btn:hover{background:var(--lift2);color:var(--text);border-color:var(--ochre-dim)}
+
+/* Theme toggle button */
+.theme-toggle{position:relative;overflow:hidden}
+.theme-toggle .icon-sun,.theme-toggle .icon-moon{position:absolute;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s}
+[data-theme="dark"] .theme-toggle .icon-sun{transform:translateY(0);opacity:1}
+[data-theme="dark"] .theme-toggle .icon-moon{transform:translateY(-20px);opacity:0}
+[data-theme="light"] .theme-toggle .icon-sun{transform:translateY(20px);opacity:0}
+[data-theme="light"] .theme-toggle .icon-moon{transform:translateY(0);opacity:1}
+
 .hr{height:1px;background:var(--b1);margin:13px 0}
-.lbl{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+
+/* Labels — spec: Geist Mono 7px, weight 500, 0.2em spacing, uppercase */
+.lbl{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+
+/* Values — spec: Geist Sans 13px, weight 400, #fafafa */
+.val{font-family:var(--fs);font-size:13px;font-weight:400;color:var(--text)}
+
+/* Base Map Grid — 2×2, "depressed" when active */
 .base-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.base-btn{background:var(--lift);border:1px solid var(--b1);border-radius:var(--rs);padding:10px 5px 9px;text-align:center;cursor:pointer;font-family:var(--fu);font-size:12px;font-weight:600;color:var(--muted);transition:background .2s,border-color .2s,color .2s,transform .14s,box-shadow .2s}
+.base-btn{
+  background:var(--lift);border:1px solid var(--b1);border-radius:var(--rs);
+  padding:10px 5px 9px;text-align:center;cursor:pointer;
+  font-family:var(--fs);font-size:12px;font-weight:600;color:var(--muted);
+  transition:background .2s,border-color .3s,color .2s,transform .14s,box-shadow .2s;
+}
 .base-btn .ico{display:block;font-size:16px;margin-bottom:4px;line-height:1.3}
-.base-btn:hover{background:var(--lift2);border-color:var(--b2);color:var(--text);transform:translateY(-1px)}
-.base-btn.on{background:rgba(0,229,255,.07);border-color:rgba(0,229,255,.42);color:var(--cyan);box-shadow:var(--gcyan),inset 0 0 24px rgba(0,229,255,.03)}
+.base-btn:hover{background:var(--lift2);border-color:var(--ochre-dim);color:var(--text);transform:translateY(-1px)}
+.base-btn.on{
+  background:var(--ochre-bg);
+  border-color:var(--ochre-border);
+  color:var(--ochre);
+  box-shadow:inset 0 2px 8px rgba(0,0,0,0.2),var(--gochre);
+}
+
+/* Overlay stack */
 .ov-stack{display:flex;flex-direction:column;gap:5px}
-.ov-row{display:flex;align-items:center;justify-content:space-between;padding:10px 11px;background:var(--lift);border:1px solid var(--b1);border-radius:var(--rs);cursor:pointer;user-select:none;transition:background .2s,border-color .22s}
-.ov-row:hover{background:var(--lift2);border-color:var(--b2)}
+.ov-row{display:flex;align-items:center;justify-content:space-between;padding:10px 11px;background:var(--lift);border:1px solid var(--b1);border-radius:var(--rs);cursor:pointer;user-select:none;transition:background .2s,border-color .3s}
+.ov-row:hover{background:var(--lift2);border-color:var(--ochre-dim)}
+
+/* Overlay active states */
 .ov-row[data-ov="terrain3d"].on{background:rgba(162,89,255,.07);border-color:rgba(162,89,255,.38)}
-.ov-row[data-ov="hillshade"].on{background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.32)}
-.ov-row[data-ov="heatmap"].on{background:rgba(255,45,120,.07);border-color:rgba(255,45,120,.38)}
-.ov-row[data-ov="contours"].on{background:rgba(0,229,255,.07);border-color:rgba(0,229,255,.38)}
+.ov-row[data-ov="hillshade"].on{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.32)}
+.ov-row[data-ov="heatmap"].on{background:rgba(225,29,72,.07);border-color:rgba(225,29,72,.38)}
+.ov-row[data-ov="contours"].on{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.38)}
+
 .ov-l{display:flex;align-items:center;gap:9px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--b2);flex-shrink:0;transition:background .25s,box-shadow .25s}
 .ov-row[data-ov="terrain3d"].on .dot{background:var(--purple);box-shadow:var(--gpurple)}
-.ov-row[data-ov="hillshade"].on  .dot{background:var(--lime);box-shadow:var(--glime)}
-.ov-row[data-ov="heatmap"].on    .dot{background:var(--pink);box-shadow:var(--gpink)}
-.ov-row[data-ov="contours"].on   .dot{background:var(--cyan);box-shadow:var(--gcyan)}
-.ov-name{font-family:var(--fu);font-size:13px;font-weight:600;color:var(--text)}
-.ov-sub{font-family:var(--fm);font-size:8px;color:var(--muted);margin-top:1px}
+.ov-row[data-ov="hillshade"].on .dot{background:var(--verdigris);box-shadow:var(--gverd)}
+.ov-row[data-ov="heatmap"].on .dot{background:var(--pink);box-shadow:var(--gpink)}
+.ov-row[data-ov="contours"].on .dot{background:var(--verdigris);box-shadow:var(--gverd)}
+.ov-name{font-family:var(--fs);font-size:13px;font-weight:600;color:var(--text)}
+.ov-sub{font-family:var(--fm);font-size:7px;letter-spacing:0.05em;color:var(--muted);margin-top:1px}
+
+/* Toggle pills */
 .pill{width:30px;height:16px;border-radius:8px;background:rgba(255,255,255,.08);position:relative;transition:background .25s;flex-shrink:0}
+[data-theme="light"] .pill{background:rgba(0,0,0,.1)}
 .pill::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.3);transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s}
+[data-theme="light"] .pill::after{background:rgba(0,0,0,.25)}
 .ov-row[data-ov="terrain3d"].on .pill{background:rgba(162,89,255,.35)}
 .ov-row[data-ov="terrain3d"].on .pill::after{transform:translateX(14px);background:var(--purple)}
-.ov-row[data-ov="hillshade"].on  .pill{background:rgba(57,255,20,.3)}
-.ov-row[data-ov="hillshade"].on  .pill::after{transform:translateX(14px);background:var(--lime)}
-.ov-row[data-ov="heatmap"].on    .pill{background:rgba(255,45,120,.35)}
-.ov-row[data-ov="heatmap"].on    .pill::after{transform:translateX(14px);background:var(--pink)}
-.ov-row[data-ov="contours"].on   .pill{background:rgba(0,229,255,.3)}
-.ov-row[data-ov="contours"].on   .pill::after{transform:translateX(14px);background:var(--cyan)}
-.sl-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
-.sl-name{font-family:var(--fu);font-size:12px;font-weight:600;color:var(--text)}
-.sl-v{font-family:var(--fm);font-size:11px;font-weight:500;color:var(--cyan)}
-input[type=range]{width:100%;height:3px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.09);border-radius:2px;outline:none;cursor:pointer;display:block;margin-bottom:14px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--cyan);box-shadow:var(--gcyan);cursor:pointer;transition:transform .15s}
-input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.28)}
-input[type=range]::-moz-range-thumb{width:15px;height:15px;border:none;border-radius:50%;background:var(--cyan);box-shadow:var(--gcyan)}
-.loc-grid{display:flex;flex-wrap:wrap;gap:4px}
-.loc-btn{background:var(--lift);border:1px solid var(--b1);border-radius:var(--rxs);padding:5px 9px;font-family:var(--fu);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .18s}
-.loc-btn:hover{background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.35);color:var(--cyan);transform:translateY(-1px)}
+.ov-row[data-ov="hillshade"].on .pill{background:rgba(16,185,129,.3)}
+.ov-row[data-ov="hillshade"].on .pill::after{transform:translateX(14px);background:var(--verdigris)}
+.ov-row[data-ov="heatmap"].on .pill{background:rgba(225,29,72,.35)}
+.ov-row[data-ov="heatmap"].on .pill::after{transform:translateX(14px);background:var(--pink)}
+.ov-row[data-ov="contours"].on .pill{background:rgba(16,185,129,.3)}
+.ov-row[data-ov="contours"].on .pill::after{transform:translateX(14px);background:var(--verdigris)}
 
-/* ── 3D EXPORT SECTION ── */
+/* Sliders — spec: track #27272a, thumb Electric Ochre + 10px glow */
+.sl-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.sl-name{font-family:var(--fs);font-size:12px;font-weight:600;color:var(--text)}
+.sl-v{font-family:var(--fm);font-size:11px;font-weight:500;color:var(--ochre)}
+input[type=range]{width:100%;height:3px;-webkit-appearance:none;appearance:none;background:var(--slider-track);border-radius:2px;outline:none;cursor:pointer;display:block;margin-bottom:14px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--ochre);box-shadow:var(--gochre);cursor:pointer;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.28)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border:none;border-radius:50%;background:var(--ochre);box-shadow:var(--gochre)}
+
+/* Quick Explore */
+.loc-grid{display:flex;flex-wrap:wrap;gap:4px}
+.loc-btn{background:var(--lift);border:1px solid var(--b1);border-radius:var(--rxs);padding:5px 9px;font-family:var(--fs);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .18s}
+.loc-btn:hover{background:var(--ochre-bg);border-color:var(--ochre-border);color:var(--ochre);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════════════
+   3D EXPORT — "Targeting System"
+══════════════════════════════════════════════ */
 .draw-cta{
   width:100%;padding:11px;border-radius:var(--rs);
-  border:1px dashed rgba(255,183,0,.35);
-  background:rgba(255,183,0,.05);
+  border:1px dashed var(--ochre-border);
+  background:var(--ochre-bg);
   display:flex;align-items:center;justify-content:center;gap:8px;
-  font-family:var(--fu);font-size:13px;font-weight:700;letter-spacing:.4px;
-  color:var(--amber);cursor:pointer;transition:all .22s;
+  font-family:var(--fs);font-size:13px;font-weight:700;letter-spacing:.4px;
+  color:var(--ochre);cursor:pointer;transition:all .22s;
 }
-.draw-cta:hover{background:rgba(255,183,0,.12);border-color:rgba(255,183,0,.55);box-shadow:var(--gamber)}
+.draw-cta:hover{background:rgba(255,184,0,.12);border-color:rgba(255,184,0,.55);box-shadow:var(--gochre)}
 .draw-cta-icon{font-size:16px}
-.draw-hint{font-family:var(--fm);font-size:9px;color:var(--muted);line-height:1.5;margin-top:8px;text-align:center}
+.draw-hint{font-family:var(--fm);font-size:7px;letter-spacing:0.05em;color:var(--muted);line-height:1.6;margin-top:8px;text-align:center}
 .dw-stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
-.dw-stat-k{font-family:var(--fm);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
-.dw-stat-v{font-family:var(--fm);font-size:11px;color:var(--amber)}
+.dw-stat-k{font-family:var(--fm);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim)}
+.dw-stat-v{font-family:var(--fm);font-size:11px;color:var(--ochre)}
 .dw-vbadge{
   display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,183,0,.1);border:1px solid rgba(255,183,0,.28);
+  background:var(--ochre-bg);border:1px solid var(--ochre-border);
   border-radius:20px;padding:5px 11px;margin-bottom:7px;
-  font-family:var(--fm);font-size:10px;color:var(--amber);
+  font-family:var(--fm);font-size:7px;letter-spacing:0.1em;color:var(--ochre);text-transform:uppercase;
 }
-.dw-vbadge-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:var(--gamber);animation:pls 1.8s ease-in-out infinite}
+.dw-vbadge-dot{width:5px;height:5px;border-radius:50%;background:var(--ochre);box-shadow:var(--gochre);animation:pls 1.8s ease-in-out infinite}
 .dw-btn-row{display:flex;gap:5px;margin-top:8px}
-.dw-btn{flex:1;padding:8px 5px;border-radius:var(--rxs);border:1px solid var(--b1);background:var(--lift);font-family:var(--fu);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s}
+.dw-btn{flex:1;padding:8px 5px;border-radius:var(--rxs);border:1px solid var(--b1);background:var(--lift);font-family:var(--fs);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s}
 .dw-btn:hover{background:var(--lift2);border-color:var(--b2);color:var(--text)}
 .dw-btn:disabled{opacity:.3;cursor:not-allowed}
-.dw-btn.danger:hover{background:rgba(255,45,120,.08);border-color:rgba(255,45,120,.3);color:var(--pink)}
+.dw-btn.danger:hover{background:rgba(225,29,72,.08);border-color:var(--pink-dim);color:var(--pink)}
+
 .res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:12px}
-.res-btn{background:var(--lift);border:1px solid var(--b1);border-radius:var(--rxs);padding:8px 3px 7px;text-align:center;cursor:pointer;font-family:var(--fu);font-size:10px;font-weight:600;color:var(--muted);line-height:1.3;transition:all .18s}
-.res-btn small{font-family:var(--fm);font-size:8px;display:block;margin-top:2px}
+.res-btn{background:var(--lift);border:1px solid var(--b1);border-radius:var(--rxs);padding:8px 3px 7px;text-align:center;cursor:pointer;font-family:var(--fs);font-size:10px;font-weight:600;color:var(--muted);line-height:1.3;transition:all .18s}
+.res-btn small{font-family:var(--fm);font-size:7px;display:block;margin-top:2px;letter-spacing:0.1em}
 .res-btn:hover{background:var(--lift2);border-color:var(--b2);color:var(--text)}
-.res-btn.on{background:rgba(255,183,0,.08);border-color:rgba(255,183,0,.4);color:var(--amber)}
+.res-btn.on{background:var(--ochre-bg);border-color:var(--ochre-border);color:var(--ochre)}
+
 .fmt-row{display:flex;gap:5px;margin-bottom:12px}
 .fmt-btn{flex:1;padding:8px;border-radius:var(--rxs);border:1px solid var(--b1);background:var(--lift);font-family:var(--fm);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;letter-spacing:1px;transition:all .18s}
 .fmt-btn:hover{background:var(--lift2);color:var(--text)}
-.fmt-btn.on{background:rgba(255,183,0,.08);border-color:rgba(255,183,0,.4);color:var(--amber)}
+.fmt-btn.on{background:var(--ochre-bg);border-color:var(--ochre-border);color:var(--ochre)}
+
 .export-btn{
   width:100%;padding:12px;border-radius:var(--rs);
-  background:linear-gradient(135deg,rgba(255,183,0,.18),rgba(255,107,0,.18));
-  border:1px solid rgba(255,183,0,.4);
-  font-family:var(--fh);font-size:12px;font-weight:700;letter-spacing:.5px;
-  color:var(--amber);cursor:pointer;transition:all .22s;margin-bottom:6px;
+  background:linear-gradient(135deg,rgba(255,184,0,.15),rgba(225,29,72,.15));
+  border:1px solid var(--ochre-border);
+  font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.5px;
+  color:var(--ochre);cursor:pointer;transition:all .22s;margin-bottom:6px;
 }
-.export-btn:hover{background:linear-gradient(135deg,rgba(255,183,0,.28),rgba(255,107,0,.28));box-shadow:var(--gamber);transform:translateY(-1px)}
+.export-btn:hover{background:linear-gradient(135deg,rgba(255,184,0,.25),rgba(225,29,72,.25));box-shadow:var(--gochre);transform:translateY(-1px)}
 .export-btn:active{transform:translateY(0)}
-.exp-sl-v{font-family:var(--fm);font-size:11px;font-weight:500;color:var(--amber)}
-input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow:var(--gamber)}
+.exp-sl-v{font-family:var(--fm);font-size:11px;font-weight:500;color:var(--ochre)}
+input[type=range].amber::-webkit-slider-thumb{background:var(--ochre);box-shadow:var(--gochre)}
 
 /* ── EXPORT PROGRESS MODAL ── */
 #export-modal{
   position:fixed;inset:0;z-index:500;
-  background:rgba(1,2,9,.75);backdrop-filter:blur(12px);
+  background:var(--modal-bg);backdrop-filter:blur(12px);
   display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .35s;
 }
 #export-modal.show{opacity:1;pointer-events:all}
 .em-card{
   width:340px;border-radius:var(--r);padding:28px 24px 24px;
-  background:rgba(3,4,16,.97);border:1px solid rgba(255,183,0,.2);
-  box-shadow:0 40px 100px rgba(0,0,0,.8),var(--gamber);
+  background:var(--surface-solid);border:1px solid var(--ochre-border);
+  box-shadow:0 40px 100px rgba(0,0,0,.5),var(--gochre);
   display:flex;flex-direction:column;align-items:center;gap:12px;
   animation:emIn .35s cubic-bezier(.4,0,.2,1) both;
 }
 @keyframes emIn{from{transform:scale(.9) translateY(12px);opacity:0}to{transform:none;opacity:1}}
+/* Rotating wireframe mountain icon */
 .em-icon{font-size:32px;line-height:1;animation:spin 3s linear infinite}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.em-title{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.5px}
-.em-step{font-family:var(--fm);font-size:10px;color:var(--amber);text-align:center;min-height:14px;transition:all .25s}
-.em-track{width:100%;height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
-.em-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--orange));border-radius:2px;transition:width .4s ease;width:0%}
-.em-pct{font-family:var(--fm);font-size:9px;color:var(--muted)}
-.em-sub{font-family:var(--fm);font-size:9px;color:var(--dim);text-align:center}
-.em-done{font-family:var(--fh);font-size:12px;color:var(--lime);letter-spacing:.5px}
+.em-title{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.em-step{font-family:var(--fm);font-size:7px;letter-spacing:0.1em;color:var(--ochre);text-align:center;min-height:14px;text-transform:uppercase;transition:all .25s}
+/* Progress bar: 2px, gradient ochre→pink */
+.em-track{width:100%;height:2px;background:var(--track);border-radius:1px;overflow:hidden}
+.em-fill{height:100%;background:linear-gradient(90deg,var(--ochre),var(--pink));border-radius:1px;transition:width .4s ease;width:0%}
+.em-pct{font-family:var(--fm);font-size:7px;letter-spacing:0.1em;color:var(--muted)}
+.em-sub{font-family:var(--fm);font-size:7px;letter-spacing:0.05em;color:var(--dim);text-align:center}
+/* "Export Successful" — Editorial New / Playfair serif contrast */
+.em-done{font-family:var(--fed);font-size:16px;font-style:italic;color:var(--verdigris);letter-spacing:.5px}
 
 /* ── DRAW MODE cursor hint ── */
 #draw-hint-bar{
   position:absolute;bottom:80px;left:50%;transform:translateX(-50%);
   z-index:250;border-radius:30px;padding:9px 18px;
   display:flex;align-items:center;gap:9px;
-  font-family:var(--fu);font-size:13px;font-weight:500;color:var(--amber);
+  font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--ochre);
   white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s;
-  box-shadow:0 8px 32px rgba(0,0,0,.5),var(--gamber);
+  box-shadow:0 8px 32px rgba(0,0,0,.35),var(--gochre);
 }
 #draw-hint-bar.show{opacity:1}
-.dhb-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:var(--gamber);animation:pls 1.5s ease-in-out infinite}
+.dhb-dot{width:7px;height:7px;border-radius:50%;background:var(--ochre);box-shadow:var(--gochre);animation:pls 1.5s ease-in-out infinite}
 
 /* ── PANEL FAB ── */
-#panel-fab{position:absolute;top:20px;left:20px;z-index:201;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text);cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s,transform .18s,color .18s}
+#panel-fab{position:absolute;top:20px;left:20px;z-index:201;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text);cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .3s,transform .18s,color .18s,border-color .3s}
 #panel-fab.show{opacity:1;pointer-events:all}
-#panel-fab:hover{transform:scale(1.06);color:var(--cyan)}
+#panel-fab:hover{transform:scale(1.06);color:var(--ochre);border-color:var(--ochre-dim)}
 
 /* ── COMPASS ── */
-#compass{position:absolute;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.5);transition:transform .18s}
-#compass:hover{transform:scale(1.08)}
+#compass{position:absolute;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.35);transition:transform .18s,border-color .3s}
+#compass:hover{transform:scale(1.08);border-color:var(--ochre-dim)}
 #compass-n{transition:transform .1s linear}
 
 /* ── ZOOM ── */
 #zoom-wrap{position:absolute;right:20px;top:82px;z-index:200;display:flex;flex-direction:column;gap:4px}
-.z-btn{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:200;color:var(--text);line-height:1;cursor:pointer;user-select:none;box-shadow:0 4px 16px rgba(0,0,0,.35);transition:background .18s,border-color .18s,color .18s,transform .12s,box-shadow .18s}
-.z-btn:hover{background:rgba(0,229,255,.1)!important;border-color:rgba(0,229,255,.42)!important;color:var(--cyan);box-shadow:var(--gcyan);transform:scale(1.06)}
+.z-btn{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:200;color:var(--text);line-height:1;cursor:pointer;user-select:none;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:background .18s,border-color .3s,color .18s,transform .12s,box-shadow .18s}
+.z-btn:hover{background:var(--ochre-bg)!important;border-color:var(--ochre-border)!important;color:var(--ochre);box-shadow:var(--gochre);transform:scale(1.06)}
 .z-btn:active{transform:scale(.9)}
 
-/* ── INFO BAR — bottom right ── */
-#info-bar{position:absolute;bottom:20px;right:20px;z-index:200;border-radius:var(--r);padding:10px 15px;display:flex;gap:16px;align-items:center;box-shadow:0 8px 36px rgba(0,0,0,.55)}
-.ib-lbl{font-family:var(--fm);font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
-.ib-v{font-family:var(--fm);font-size:13px;font-weight:500;color:var(--cyan);white-space:nowrap}
-.ib-v.elev{color:var(--lime)}.ib-v.zoom{color:var(--purple)}
+/* ══════════════════════════════════════════════
+   GLASS HUD — Bottom Info Bar
+══════════════════════════════════════════════ */
+#info-bar{position:absolute;bottom:20px;right:20px;z-index:200;border-radius:var(--r);padding:10px 15px;display:flex;gap:16px;align-items:center;box-shadow:0 8px 36px rgba(0,0,0,.35);transition:border-color .3s}
+#info-bar:hover{border-color:var(--ochre-dim)}
+.ib-lbl{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+.ib-v{font-family:var(--fm);font-size:13px;font-weight:500;color:var(--ochre);white-space:nowrap}
+.ib-v.elev{color:var(--verdigris)}.ib-v.zoom{color:var(--purple)}
 .ib-sep{width:1px;align-self:stretch;background:var(--b1)}
 
-/* ── LEGEND — stacks above info-bar (bottom right) ── */
-#legend{position:absolute;bottom:90px;right:20px;z-index:200;border-radius:var(--r);padding:14px 13px 12px;box-shadow:0 8px 36px rgba(0,0,0,.55);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;transform:translateY(8px)}
+/* ── LEGEND ── */
+#legend{position:absolute;bottom:90px;right:20px;z-index:200;border-radius:var(--r);padding:14px 13px 12px;box-shadow:0 8px 36px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s,border-color .3s;transform:translateY(8px)}
 #legend.show{opacity:1;transform:translateY(0);pointer-events:all}
-.leg-ttl{font-family:var(--fm);font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.leg-ttl{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)}
 .leg-inner{display:flex;gap:8px;align-items:stretch}
 .leg-ticks{display:flex;flex-direction:column;justify-content:space-between;height:150px;padding:1px 0}
-.leg-tick{font-family:var(--fm);font-size:8px;color:var(--muted);line-height:1}
-.leg-bar{width:16px;height:150px;border-radius:4px;border:1px solid var(--b2);background:linear-gradient(to bottom,#ffffff 0%,#ff2d78 10%,#ff6b00 22%,#ffb700 33%,#ccff00 44%,#39ff14 55%,#00e5d0 67%,#00aac8 77%,#003d80 88%,#01052e 100%)}
-.leg-unit{font-family:var(--fm);font-size:7px;letter-spacing:1.5px;color:var(--dim);text-align:center}
+.leg-tick{font-family:var(--fm);font-size:7px;letter-spacing:0.05em;color:var(--muted);line-height:1}
+/* Digital Chiaroscuro elevation gradient: void → verdigris → white */
+.leg-bar{width:16px;height:150px;border-radius:4px;border:1px solid var(--b2);background:linear-gradient(to bottom,#fafafa 0%,#d4d4d8 15%,#10B981 40%,#065f46 65%,#09090b 100%)}
+.leg-unit{font-family:var(--fm);font-size:7px;font-weight:500;letter-spacing:0.15em;color:var(--dim);text-align:center;text-transform:uppercase}
 
-/* ── STATUS (hidden — info-bar replaces it) ── */
+/* ── STATUS ── */
 #status-pill{display:none!important}
-.pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:var(--glime);animation:pls 2.8s ease-in-out infinite;flex-shrink:0}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--verdigris);box-shadow:var(--gverd);animation:pls 2.8s ease-in-out infinite;flex-shrink:0}
 @keyframes pls{0%,100%{opacity:1}50%{opacity:.2}}
 
-/* ── FX ── */
-#vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 52%,rgba(1,2,9,.6) 100%)}
-#corners{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 0% 0%,rgba(0,229,255,.025) 0%,transparent 38%),radial-gradient(circle at 100% 100%,rgba(255,45,120,.025) 0%,transparent 38%)}
-#scan{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent,transparent 3px,rgba(0,0,0,.008) 3px,rgba(0,0,0,.008) 4px)}
+/* ══════════════════════════════════════════════
+   FX OVERLAYS — Vignette, Corners, Scanlines, Grain
+══════════════════════════════════════════════ */
+#vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 50%,var(--vig-outer) 100%);transition:background .5s}
+#corners{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 0% 0%,rgba(255,184,0,.02) 0%,transparent 38%),radial-gradient(circle at 100% 100%,rgba(225,29,72,.02) 0%,transparent 38%)}
+#scan{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scan-color) 3px)}
+
+/* ── RETICLE CURSOR (draw mode) ── */
+.reticle-cursor{cursor:crosshair}
+.reticle-cursor .maplibregl-canvas{cursor:crosshair!important}
+
+/* ── NEON PULSING NODE ANIMATION ── */
+@keyframes nodePulse{
+  0%,100%{box-shadow:0 0 4px var(--ochre),0 0 12px rgba(255,184,0,0.4)}
+  50%{box-shadow:0 0 8px var(--ochre),0 0 24px rgba(255,184,0,0.6),0 0 40px rgba(255,184,0,0.2)}
+}
+
+/* ── Polygon "Laser Scan" stripe animation ── */
+@keyframes laserScan{
+  0%{background-position:0 0}
+  100%{background-position:40px 40px}
+}
 </style>
 </head>
 <body>
+
+<!-- SVG Grain Filter — 5% noise texture -->
+<svg class="grain-overlay" viewBox="0 0 512 512" preserveAspectRatio="none" style="width:100%;height:100%">
+  <filter id="grain-filter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain-filter)"/>
+</svg>
 
 <div id="loading">
   <div class="ld-eye">3D Terrain Explorer</div>
@@ -272,20 +444,28 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
   <div id="search-results" class="glass"></div>
 </div>
 
-<!-- PANEL -->
+<!-- ═══════════════════════════════════
+     THE COMMAND PANEL — "Glass Capsule"
+═══════════════════════════════════ -->
 <div id="panel" class="glass">
   <div class="p-hd">
     <div><div class="p-logo">TOPO</div><div class="p-tag">Elevation Explorer v4</div></div>
-    <button class="p-x" onclick="collapsePanel()">✕</button>
+    <div class="p-controls">
+      <button class="p-btn theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+        <span class="icon-sun">☀</span>
+        <span class="icon-moon">☽</span>
+      </button>
+      <button class="p-btn" onclick="collapsePanel()" title="Close panel">✕</button>
+    </div>
   </div>
   <div class="hr"></div>
 
   <div class="lbl">Base Map</div>
   <div class="base-grid">
-    <button class="base-btn on" data-base="dark"      onclick="setBase('dark')">      <span class="ico">🌑</span>Dark</button>
-    <button class="base-btn"   data-base="satellite" onclick="setBase('satellite')"> <span class="ico">🛰️</span>Satellite</button>
-    <button class="base-btn"   data-base="topo"      onclick="setBase('topo')">      <span class="ico">🗺️</span>Topo</button>
-    <button class="base-btn"   data-base="street"    onclick="setBase('street')">    <span class="ico">🏙️</span>Street</button>
+    <button class="base-btn on" data-base="dark" onclick="setBase('dark')"><span class="ico">🌑</span>Dark</button>
+    <button class="base-btn" data-base="satellite" onclick="setBase('satellite')"><span class="ico">🛰️</span>Satellite</button>
+    <button class="base-btn" data-base="topo" onclick="setBase('topo')"><span class="ico">🗺️</span>Topo</button>
+    <button class="base-btn" data-base="street" onclick="setBase('street')"><span class="ico">🏙️</span>Street</button>
   </div>
   <div class="hr"></div>
 
@@ -300,11 +480,11 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
       <div class="pill"></div>
     </div>
     <div class="ov-row" data-ov="heatmap" onclick="toggleOv('heatmap')">
-      <div class="ov-l"><div class="dot"></div><div><div class="ov-name">Elevation Heat</div><div class="ov-sub">Neon altitude gradient</div></div></div>
+      <div class="ov-l"><div class="dot"></div><div><div class="ov-name">Elevation Heat</div><div class="ov-sub">Digital Chiaroscuro gradient</div></div></div>
       <div class="pill"></div>
     </div>
     <div class="ov-row" data-ov="contours" onclick="toggleOv('contours')">
-      <div class="ov-l"><div class="dot"></div><div><div class="ov-name">Contour Lines</div><div class="ov-sub">Neon vector isolines</div></div></div>
+      <div class="ov-l"><div class="dot"></div><div><div class="ov-name">Contour Lines</div><div class="ov-sub">Verdigris vector isolines</div></div></div>
       <div class="pill"></div>
     </div>
   </div>
@@ -331,9 +511,7 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
 
   <div class="hr"></div>
 
-  <!-- ═══════════════════════════════════════
-       3D EXPORT SECTION
-  ═════════════════════════════════════════ -->
+  <!-- 3D EXPORT SECTION -->
   <div class="lbl">3D Export</div>
 
   <!-- State: idle -->
@@ -393,7 +571,7 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
     <div class="lbl">Contour Lines — DXF</div>
     <div class="sl-hd"><span class="sl-name">Interval</span><span class="exp-sl-v" id="ct-int-v">100 m</span></div>
     <input type="range" class="amber" id="ct-int-r" min="0" max="6" step="1" value="3" oninput="setCtInt(this.value)" style="margin-bottom:10px"/>
-    <button class="export-btn" style="background:linear-gradient(135deg,rgba(0,229,255,.15),rgba(162,89,255,.15));border-color:rgba(0,229,255,.38);color:var(--cyan);margin-bottom:6px" onclick="exportDXF()">↓ Export Contours DXF</button>
+    <button class="export-btn" style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(162,89,255,.12));border-color:rgba(16,185,129,.38);color:var(--verdigris);margin-bottom:6px" onclick="exportDXF()">↓ Export Contours DXF</button>
   </div>
 
   <!-- State: editing vertices -->
@@ -406,7 +584,7 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
     </div>
     <div class="draw-hint" style="margin-top:0;text-align:left">Drag any vertex to reshape the polygon. Click ✓ Done when finished.</div>
     <div class="dw-btn-row" style="margin-top:10px">
-      <button class="dw-btn" style="border-color:rgba(57,255,20,.3);color:var(--lime)" onclick="finishEdit()">✓ Done</button>
+      <button class="dw-btn" style="border-color:rgba(16,185,129,.3);color:var(--verdigris)" onclick="finishEdit()">✓ Done</button>
       <button class="dw-btn danger" onclick="cancelEdit()">✕ Cancel</button>
     </div>
   </div>
@@ -436,8 +614,8 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
 <div id="compass" class="glass" title="Reset north" onclick="resetNorth()">
   <svg id="compass-n" width="26" height="26" viewBox="0 0 26 26" fill="none">
     <polygon points="13,2 16,13 13,11.5 10,13" fill="var(--pink)"/>
-    <polygon points="13,24 16,13 13,14.5 10,13" fill="rgba(255,255,255,.14)"/>
-    <circle cx="13" cy="13" r="2.2" fill="rgba(255,255,255,.12)"/>
+    <polygon points="13,24 16,13 13,14.5 10,13" fill="var(--b2)"/>
+    <circle cx="13" cy="13" r="2.2" fill="var(--b1)"/>
     <circle cx="13" cy="13" r=".9" fill="var(--text)"/>
   </svg>
 </div>
@@ -479,6 +657,38 @@ input[type=range].amber::-webkit-slider-thumb{background:var(--amber);box-shadow
 <script>
 "use strict";
 
+/* ══════════════════════════════════════════════
+   THEME TOGGLE — Light / Dark
+══════════════════════════════════════════════ */
+let currentTheme = 'dark';
+
+function toggleTheme(){
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  /* Update map sky layer for theme */
+  if(ready && map.getLayer('sky')){
+    if(currentTheme === 'light'){
+      map.setPaintProperty('sky','sky-gradient',
+        ['interpolate',['linear'],['sky-radial-progress'],0.78,'rgba(200,210,230,1)',1.0,'rgba(180,195,220,1)']);
+    } else {
+      map.setPaintProperty('sky','sky-gradient',
+        ['interpolate',['linear'],['sky-radial-progress'],0.78,'rgba(1,2,12,1)',1.0,'rgba(1,1,6,1)']);
+    }
+  }
+
+  /* Update contour line colours for theme */
+  if(ready){
+    if(currentTheme === 'light'){
+      if(map.getLayer('lyr-ct-minor')) map.setPaintProperty('lyr-ct-minor','line-color','rgba(5,150,105,0.5)');
+      if(map.getLayer('lyr-ct-major')) map.setPaintProperty('lyr-ct-major','line-color','#059669');
+    } else {
+      if(map.getLayer('lyr-ct-minor')) map.setPaintProperty('lyr-ct-minor','line-color','rgba(16,185,129,0.20)');
+      if(map.getLayer('lyr-ct-major')) map.setPaintProperty('lyr-ct-major','line-color','rgba(16,185,129,0.8)');
+    }
+  }
+}
+
 /* ── CONSTANTS ── */
 const TILES={
   dark:     'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
@@ -516,7 +726,7 @@ const map=new maplibregl.Map({
 });
 
 map.on('load',async()=>{
-  /* DEM raster-dem — for terrain3d + hillshade + queryTerrainElevation */
+  /* DEM raster-dem */
   map.addSource('dem',{type:'raster-dem',tiles:[TILES.terrain],encoding:'terrarium',tileSize:256,maxzoom:14});
 
   /* Base tile sources */
@@ -533,8 +743,7 @@ map.on('load',async()=>{
     paint:{'hillshade-shadow-color':'#04001a','hillshade-highlight-color':'#c4eeff','hillshade-accent-color':'#1a00aa','hillshade-illumination-direction':320,'hillshade-exaggeration':0.75}
   });
 
-  /* ── ELEVATION HEATMAP — canvas ImageSource painted via queryTerrainElevation
-     Same data pipeline as hillshade (both use 'dem' source). Guaranteed to work.  ── */
+  /* Elevation heatmap — ImageSource */
   const BLANK_PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
   map.addSource('heatmap-img',{type:'image',url:BLANK_PNG,
     coordinates:[[-180,85],[180,85],[180,-85],[-180,-85]]
@@ -544,15 +753,15 @@ map.on('load',async()=>{
     paint:{'raster-opacity':0.88,'raster-opacity-transition':{duration:350,delay:0}}
   });
 
-  /* ── CONTOURS — GeoJSON line features from marching-squares on elevation grid  ── */
+  /* Contours — Verdigris neon lines */
   map.addSource('ct-src',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
   map.addLayer({id:'lyr-ct-minor',type:'line',source:'ct-src',
     filter:['==',['get','major'],false],layout:{visibility:'none'},
-    paint:{'line-color':'rgba(0,229,255,0.40)','line-width':0.8}
+    paint:{'line-color':'rgba(16,185,129,0.20)','line-width':0.8}
   });
   map.addLayer({id:'lyr-ct-major',type:'line',source:'ct-src',
     filter:['==',['get','major'],true],layout:{visibility:'none'},
-    paint:{'line-color':'#00e5ff','line-width':2.0,'line-blur':0.3}
+    paint:{'line-color':'rgba(16,185,129,0.8)','line-width':2.0,'line-blur':0.5}
   });
 
   /* Sky */
@@ -561,7 +770,7 @@ map.on('load',async()=>{
   /* Terrain 3D */
   map.setTerrain({source:'dem',exaggeration:S.exag});
 
-  /* ── DRAWING LAYERS ── */
+  /* Drawing layers */
   initDrawLayers();
 
   ready=true;
@@ -573,14 +782,17 @@ map.on('load',async()=>{
   },2800);
 });
 
-/* ══════════════════════════════════════════════════════════════
-   ELEVATION COLOUR PALETTE  (same stops for heatmap canvas & legend)
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   ELEVATION COLOUR PALETTE — "Digital Chiaroscuro"
+   0m: #09090b (deep void)
+   2000m: #10B981 (Verdigris Neon)
+   8000m: #fafafa (Pure Light)
+══════════════════════════════════════════════ */
 const ELEV_STOPS=[
-  [-500,[0,6,18]],[0,[1,5,46]],[300,[0,61,128]],[800,[0,87,184]],
-  [1300,[0,170,200]],[1900,[0,229,208]],[2600,[57,255,20]],
-  [3400,[204,255,0]],[4500,[255,183,0]],[6000,[255,107,0]],
-  [7500,[255,45,120]],[8848,[255,255,255]]
+  [-500,[9,9,11]],[0,[9,9,11]],[400,[6,78,59]],[800,[6,95,70]],
+  [1300,[5,150,105]],[2000,[16,185,129]],[2800,[52,211,153]],
+  [3600,[110,231,183]],[4500,[167,243,208]],[5500,[209,250,229]],
+  [7000,[228,228,231]],[8848,[250,250,250]]
 ];
 function elevToRGB(e){
   e=Math.max(-500,Math.min(8848,e));
@@ -591,13 +803,12 @@ function elevToRGB(e){
       return c0.map((c,j)=>Math.round(c+t*(c1[j]-c)));
     }
   }
-  return[0,6,18];
+  return[9,9,11];
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SHARED ELEVATION GRID — sampled via queryTerrainElevation
-   (same data as hillshade, guaranteed accurate)
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   SHARED ELEVATION GRID
+══════════════════════════════════════════════ */
 const GW=96,GH=96;
 let _egrid=null,_ebounds=null,_hmCanvas=null;
 
@@ -614,9 +825,9 @@ function sampleElevGrid(){
   _egrid=g;_ebounds={lnMin,lnMax,ltMax,ltMin};
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CANVAS HEATMAP  — painted to ImageSource
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   CANVAS HEATMAP
+══════════════════════════════════════════════ */
 function updateHeatmap(){
   if(!S.heatmap||!ready)return;
   sampleElevGrid();
@@ -635,9 +846,9 @@ function updateHeatmap(){
   });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   MARCHING SQUARES — extracts contour line segments from grid
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   MARCHING SQUARES
+══════════════════════════════════════════════ */
 function extractContourSegs(grid,W,H,threshold){
   const segs=[];
   for(let y=0;y<H-1;y++)for(let x=0;x<W-1;x++){
@@ -677,9 +888,9 @@ function ctParams(z){
   return{iv:1000,mN:5};
 }
 
-/* ══════════════════════════════════════════════════════════════
-   UPDATE CONTOUR GEOJSON LAYER
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   CONTOUR GEOJSON UPDATE
+══════════════════════════════════════════════ */
 function updateContours(){
   if(!S.contours||!ready)return;
   sampleElevGrid();
@@ -700,12 +911,12 @@ function updateContours(){
   map.getSource('ct-src').setData({type:'FeatureCollection',features});
 }
 
-/* Debounced refresh when user moves/zooms */
+/* Debounced refresh */
 let _ovTimer=null;
 function scheduleOverlayRefresh(){
   clearTimeout(_ovTimer);
   _ovTimer=setTimeout(()=>{
-    _egrid=null; // force re-sample at new viewport
+    _egrid=null;
     if(S.heatmap)updateHeatmap();
     if(S.contours)updateContours();
   },400);
@@ -713,9 +924,9 @@ function scheduleOverlayRefresh(){
 map.on('moveend',scheduleOverlayRefresh);
 map.on('zoomend',scheduleOverlayRefresh);
 
-/* ══════════════════════════════════════════════════════════════
-   DRAWING LAYERS — amber polygon overlay
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   DRAWING LAYERS — amber polygon + laser scan
+══════════════════════════════════════════════ */
 function initDrawLayers(){
   const emptyFC={type:'FeatureCollection',features:[]};
   const emptyLine={type:'Feature',geometry:{type:'LineString',coordinates:[]}};
@@ -726,20 +937,20 @@ function initDrawLayers(){
   map.addSource('dw-pts', {type:'geojson',data:emptyFC});
   map.addSource('dw-cur', {type:'geojson',data:emptyLine});
 
-  /* Fill */
+  /* Fill — amber-tinted "laser scan" */
   map.addLayer({id:'lyr-dw-fill',type:'fill',source:'dw-poly',
-    paint:{'fill-color':'rgba(255,183,0,0.10)','fill-outline-color':'transparent'}});
-  /* Outline */
+    paint:{'fill-color':'rgba(255,184,0,0.05)','fill-outline-color':'transparent'}});
+  /* Outline — 1.5px amber with glow */
   map.addLayer({id:'lyr-dw-line',type:'line',source:'dw-line',
-    paint:{'line-color':'#ffb700','line-width':2,'line-opacity':0.9}});
+    paint:{'line-color':'#FFB800','line-width':1.5,'line-opacity':0.9}});
   /* Dashed cursor preview */
   map.addLayer({id:'lyr-dw-cur',type:'line',source:'dw-cur',
-    paint:{'line-color':'rgba(255,183,0,0.45)','line-width':1.5,'line-dasharray':[5,5]}});
-  /* Vertex dots */
+    paint:{'line-color':'rgba(255,184,0,0.45)','line-width':1.5,'line-dasharray':[5,5]}});
+  /* Vertex dots — "Neon Pulsing Nodes" */
   map.addLayer({id:'lyr-dw-pts',type:'circle',source:'dw-pts',
     paint:{
       'circle-radius':['case',['==',['get','first'],true],9,5],
-      'circle-color':['case',['==',['get','first'],true],'#ff6b00','#ffb700'],
+      'circle-color':['case',['==',['get','first'],true],'#ff6b00','#FFB800'],
       'circle-stroke-width':2,
       'circle-stroke-color':'rgba(255,255,255,0.9)',
       'circle-opacity':0.95,
@@ -768,9 +979,9 @@ map.on('dblclick',e=>{
 });
 
 /* ── Vertex drag state ── */
-let _dragIdx=-1;   // which vertex is being dragged (-1 = none)
+let _dragIdx=-1;
 let _dragActive=false;
-let _savedVerts=null; // snapshot for cancel
+let _savedVerts=null;
 
 map.on('mousedown',e=>{
   if(EXP.mode!=='editing')return;
@@ -801,7 +1012,6 @@ map.on('mousemove',e=>{
       EXP.verts[_dragIdx]={lng:e.lngLat.lng,lat:e.lngLat.lat};
       refreshDrawLayers(true);
     } else {
-      /* Hover cursor near vertices */
       const HIT_PX=16;
       let near=false;
       EXP.verts.forEach(v=>{
@@ -824,7 +1034,9 @@ map.on('mouseup',()=>{
 /* ── Drawing state machine ── */
 function startDraw(){
   EXP.mode='drawing';EXP.verts=[];
+  /* Reticle cursor */
   map.getCanvas().style.cursor='crosshair';
+  document.getElementById('map').classList.add('reticle-cursor');
   showDwState('drawing');
   document.getElementById('draw-hint-bar').classList.add('show');
   clearDrawLayers();
@@ -833,6 +1045,7 @@ function startDraw(){
 function cancelDraw(){
   EXP.mode='idle';EXP.verts=[];
   map.getCanvas().style.cursor='';
+  document.getElementById('map').classList.remove('reticle-cursor');
   showDwState('idle');
   document.getElementById('draw-hint-bar').classList.remove('show');
   clearDrawLayers();
@@ -842,6 +1055,7 @@ function closePoly(){
   if(EXP.verts.length<3)return;
   EXP.mode='ready';
   map.getCanvas().style.cursor='';
+  document.getElementById('map').classList.remove('reticle-cursor');
   document.getElementById('draw-hint-bar').classList.remove('show');
   clearCursorLayer();
   refreshDrawLayers(true);
@@ -853,7 +1067,6 @@ function enterEditMode(){
   _savedVerts=EXP.verts.map(v=>({...v}));
   EXP.mode='editing';
   map.getCanvas().style.cursor='grab';
-  /* Make vertex dots bigger + purple in edit mode */
   map.setPaintProperty('lyr-dw-pts','circle-color',
     ['case',['==',['get','first'],true],'#a259ff','#c07aff']);
   map.setPaintProperty('lyr-dw-pts','circle-radius',
@@ -866,9 +1079,8 @@ function finishEdit(){
   _savedVerts=null;_dragIdx=-1;_dragActive=false;
   map.dragPan.enable();
   map.getCanvas().style.cursor='';
-  /* Restore normal vertex style */
   map.setPaintProperty('lyr-dw-pts','circle-color',
-    ['case',['==',['get','first'],true],'#ff6b00','#ffb700']);
+    ['case',['==',['get','first'],true],'#ff6b00','#FFB800']);
   map.setPaintProperty('lyr-dw-pts','circle-radius',
     ['case',['==',['get','first'],true],9,5]);
   refreshDrawLayers(true);
@@ -887,7 +1099,7 @@ function clearDraw(){
   _dragIdx=-1;_dragActive=false;
   map.dragPan.enable();
   map.setPaintProperty('lyr-dw-pts','circle-color',
-    ['case',['==',['get','first'],true],'#ff6b00','#ffb700']);
+    ['case',['==',['get','first'],true],'#ff6b00','#FFB800']);
   map.setPaintProperty('lyr-dw-pts','circle-radius',
     ['case',['==',['get','first'],true],9,5]);
   showDwState('idle');
@@ -940,17 +1152,16 @@ function setFmt(f){EXP.fmt=f;document.querySelectorAll('.fmt-btn').forEach(b=>b.
 
 /* ── DXF Contour Export settings ── */
 const CT_INTERVALS=[10,20,50,100,200,500,1000];
-EXP.ctInt=3; // default 100m
+EXP.ctInt=3;
 
 function setCtInt(v){
   EXP.ctInt=parseInt(v);
   document.getElementById('ct-int-v').textContent=`${CT_INTERVALS[EXP.ctInt]} m`;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   POLYLINE TRACING — connects marching-squares segments into
-   continuous polylines for clean DXF output
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   POLYLINE TRACING
+══════════════════════════════════════════════ */
 function tracePolylines(segs){
   if(!segs.length)return[];
   const EPS=0.002;
@@ -987,11 +1198,9 @@ function tracePolylines(segs){
   return lines;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   DXF CONTOUR EXPORT — strict AC1009 R12
-   Key fixes: mandatory VPORT + APPID tables (ODA/Rhino require them),
-   LINE entities (not POLYLINE — no state-machine bugs), CRLF endings.
-══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   DXF CONTOUR EXPORT
+══════════════════════════════════════════════ */
 async function exportDXF(){
   if(EXP.verts.length<3)return;
   document.getElementById('export-modal').classList.add('show');
@@ -1008,7 +1217,6 @@ async function exportDXF(){
     const realW_m=dLng*111320*Math.cos(midLat*Math.PI/180);
     const realH_m=dLat*110540;
 
-    /* Tile fetch */
     const maxDim_m=Math.max(realW_m,realH_m);
     const z=Math.max(5,Math.min(13,Math.round(Math.log2(40075016*Math.cos(midLat*Math.PI/180)/(maxDim_m/256*256)))));
     const txMin=lng2tx(minLng,z),txMax=lng2tx(maxLng,z);
@@ -1036,7 +1244,6 @@ async function exportDXF(){
     const PW=cv.width,PH=cv.height;
     const px=cx2.getImageData(0,0,PW,PH).data;
 
-    /* Elevation grid */
     const DW=256,DH=Math.max(4,Math.round(256*dLat/dLng));
     const elevGrid=new Float32Array(DW*DH);
     setProgress(0.44,'Decoding elevation...','');await sleep(20);
@@ -1059,27 +1266,21 @@ async function exportDXF(){
 
     setProgress(0.50,`Building ${levels.length} contour levels...`,'Marching squares');await sleep(20);
 
-    /* Coordinate formatters */
     const fX=(gx)=>(minLng+(gx/(DW-1))*dLng).toFixed(6);
     const fY=(gy)=>(maxLat-(gy/(DH-1))*dLat).toFixed(6);
     const textH=Math.max(0.0002,dLng*0.004).toFixed(6);
     const cx=(minLng+maxLng)/2, cy2=(minLat+maxLat)/2;
 
-    /* DXF builder — each argument becomes one line, join with CRLF */
     const L=[];
     const w=(...a)=>{for(const v of a)L.push(String(v));};
 
-    /* HEADER */
     w('0','SECTION','2','HEADER');
     w('9','$ACADVER','1','AC1009');
     w('9','$EXTMIN','10',minLng.toFixed(6),'20',minLat.toFixed(6),'30','0.0');
     w('9','$EXTMAX','10',maxLng.toFixed(6),'20',maxLat.toFixed(6),'30','0.0');
     w('0','ENDSEC');
 
-    /* TABLES */
     w('0','SECTION','2','TABLES');
-
-    /* --- VPORT table: REQUIRED by ODA (Rhino uses ODA) --- */
     w('0','TABLE','2','VPORT','70','1');
     w('0','VPORT','2','*ACTIVE','70','0');
     w('10','0.0','20','0.0');
@@ -1096,12 +1297,10 @@ async function exportDXF(){
     w('71','0','72','1000','73','1','74','3','75','0','76','0','77','0','78','0');
     w('0','ENDTAB');
 
-    /* --- LTYPE --- */
     w('0','TABLE','2','LTYPE','70','1');
     w('0','LTYPE','2','CONTINUOUS','70','64','3','Solid','72','65','73','0','40','0.0');
     w('0','ENDTAB');
 
-    /* --- LAYER: 0 + one per level --- */
     w('0','TABLE','2','LAYER','70',String(levels.length+1));
     w('0','LAYER','2','0','70','0','62','7','6','CONTINUOUS');
     levels.forEach(({e,major})=>{
@@ -1109,22 +1308,16 @@ async function exportDXF(){
     });
     w('0','ENDTAB');
 
-    /* --- STYLE --- */
     w('0','TABLE','2','STYLE','70','1');
     w('0','STYLE','2','STANDARD','70','0','40','0.0','41','1.0','50','0.0','71','0','42','0.2','3','','4','');
     w('0','ENDTAB');
 
-    /* --- APPID: REQUIRED by ODA --- */
     w('0','TABLE','2','APPID','70','1');
     w('0','APPID','2','ACAD','70','0');
     w('0','ENDTAB');
 
-    w('0','ENDSEC'); /* end TABLES */
-
-    /* BLOCKS — mandatory section */
+    w('0','ENDSEC');
     w('0','SECTION','2','BLOCKS','0','ENDSEC');
-
-    /* ENTITIES */
     w('0','SECTION','2','ENTITIES');
 
     let processed=0,totalSegs=0;
@@ -1134,15 +1327,12 @@ async function exportDXF(){
       if(!segs.length){processed++;continue;}
       totalSegs+=segs.length;
 
-      /* LINE entities — one per marching-square segment.
-         Simplest possible R12 entity. No POLYLINE state machine. */
       segs.forEach(([p0,p1])=>{
         w('0','LINE','8',lay);
         w('10',fX(p0.gx),'20',fY(p0.gy),'30','0.0');
         w('11',fX(p1.gx),'21',fY(p1.gy),'31','0.0');
       });
 
-      /* One TEXT label per level — pick the longest segment midpoint */
       const best=segs.reduce((b,s)=>{
         const d=Math.hypot(s[1].gx-s[0].gx,s[1].gy-s[0].gy);
         return d>b.d?{s,d}:b;
@@ -1167,7 +1357,8 @@ async function exportDXF(){
     downloadText(dxfText,`contours_${interval}m_${(realW_m/1000).toFixed(1)}x${(realH_m/1000).toFixed(1)}km.dxf`);
 
     setProgress(1,'','');
-    document.getElementById('em-step').innerHTML='<span style="color:var(--lime)">DXF downloaded!</span>';
+    /* Use serif "Editorial" font for success message */
+    document.getElementById('em-step').innerHTML='<span class="em-done">Export Successful</span>';
     document.getElementById('em-sub').textContent=`${levels.length} levels, ${interval}m interval, ${totalSegs} line segments, AC1009 R12`;
     await sleep(2000);
 
@@ -1179,13 +1370,9 @@ async function exportDXF(){
   document.getElementById('export-modal').classList.remove('show');
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════
    3D MESH EXPORT ENGINE
-   Fetches Terrarium DEM tiles → builds elevation grid →
-   generates solid STL/OBJ mesh → triggers download
-══════════════════════════════════════════════════════════════ */
-
-/* Tile math utilities */
+══════════════════════════════════════════════ */
 function lng2tx(lng,z){return Math.floor((lng+180)/360*(1<<z));}
 function lat2ty(lat,z){const r=lat*Math.PI/180;return Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*(1<<z));}
 function tx2lng(x,z){return x/(1<<z)*360-180;}
@@ -1197,10 +1384,8 @@ function fetchTileImg(z,x,y){
     img.crossOrigin='anonymous';
     img.onload=()=>res(img);
     img.onerror=()=>{
-      /* Return a blank image on error (no data tile — e.g. ocean) */
       const c=document.createElement('canvas');c.width=c.height=256;
       const ctx=c.getContext('2d');
-      /* Terrarium sea level (0m) = R=128,G=0,B=0 */
       ctx.fillStyle='#800000';ctx.fillRect(0,0,256,256);
       const i=new Image();i.src=c.toDataURL();i.onload=()=>res(i);
     };
@@ -1220,7 +1405,6 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function exportMesh(){
   if(EXP.verts.length<3)return;
 
-  /* Show modal */
   document.getElementById('export-modal').classList.add('show');
   setProgress(0,'Initializing…','Fetching Mapzen Terrarium elevation tiles');
   await sleep(80);
@@ -1232,18 +1416,13 @@ async function exportMesh(){
     const minLat=Math.min(...lats),maxLat=Math.max(...lats);
     const dLng=maxLng-minLng,dLat=maxLat-minLat;
 
-    /* ── STEP 1: Choose zoom ── */
-    /* Target: ~EXP.res pixels across the wider dimension at chosen zoom */
     const midLat=(minLat+maxLat)/2;
     const realW_m=dLng*111320*Math.cos(midLat*Math.PI/180);
     const realH_m=dLat*110540;
     const maxDim_m=Math.max(realW_m,realH_m);
-    /* At zoom z: meters/pixel ≈ 40075016*cos(lat)/(256*2^z) */
-    /* We want ~EXP.res pixels → mpp = maxDim_m/EXP.res */
     const targetMpp=maxDim_m/EXP.res;
     const z=Math.max(5,Math.min(13,Math.round(Math.log2(40075016*Math.cos(midLat*Math.PI/180)/(targetMpp*256)))));
 
-    /* ── STEP 2: Tile range ── */
     const txMin=lng2tx(minLng,z),txMax=lng2tx(maxLng,z);
     const tyMin=lat2ty(maxLat,z),tyMax=lat2ty(minLat,z);
     const tW=txMax-txMin+1,tH=tyMax-tyMin+1;
@@ -1252,7 +1431,6 @@ async function exportMesh(){
     setProgress(0.04,`Fetching ${total} elevation tile${total>1?'s':''}…`,'');
     await sleep(30);
 
-    /* ── STEP 3: Build canvas from tiles ── */
     const canvas=document.createElement('canvas');
     canvas.width=tW*256;canvas.height=tH*256;
     const ctx=canvas.getContext('2d',{willReadFrequently:true});
@@ -1273,7 +1451,6 @@ async function exportMesh(){
     }
     await Promise.all(fetches);
 
-    /* Tile coordinate extents (degrees) */
     const tLngMin=tx2lng(txMin,z),tLngMax=tx2lng(txMax+1,z);
     const tLatMax=ty2lat(tyMin,z),tLatMin=ty2lat(tyMax+1,z);
     const PW=canvas.width,PH=canvas.height;
@@ -1283,8 +1460,6 @@ async function exportMesh(){
     const imgData=ctx.getImageData(0,0,PW,PH);
     const px=imgData.data;
 
-    /* ── STEP 4: Sample elevation grid ── */
-    /* Grid dimensions: keep aspect ratio */
     const W=EXP.res;
     const H=Math.max(4,Math.round(EXP.res*dLat/dLng));
 
@@ -1296,9 +1471,9 @@ async function exportMesh(){
         const lat=maxLat-(gy/(H-1))*dLat;
         const cpx=Math.floor((lng-tLngMin)/(tLngMax-tLngMin)*PW);
         const cpy=Math.floor((tLatMax-lat)/(tLatMax-tLatMin)*PH);
-        const cx=Math.max(0,Math.min(PW-1,cpx));
-        const cy=Math.max(0,Math.min(PH-1,cpy));
-        const pi=(cy*PW+cx)*4;
+        const cx2=Math.max(0,Math.min(PW-1,cpx));
+        const cy2=Math.max(0,Math.min(PH-1,cpy));
+        const pi=(cy2*PW+cx2)*4;
         const r=px[pi],g=px[pi+1],b=px[pi+2];
         elevGrid[gy*W+gx]=r*256+g+b/256-32768;
       }
@@ -1308,32 +1483,21 @@ async function exportMesh(){
       }
     }
 
-    /* ── STEP 5: Find elevation range ── */
     let minE=Infinity,maxE=-Infinity;
     for(let i=0;i<elevGrid.length;i++){minE=Math.min(minE,elevGrid[i]);maxE=Math.max(maxE,elevGrid[i]);}
-    const baseThk=Math.max(10,(maxE-minE)*0.05); /* 5% of height range as base thickness */
+    const baseThk=Math.max(10,(maxE-minE)*0.05);
 
-    /* Vertex function: converts grid coords to 3D world coords (metres) */
     function pt(gx,gy){
       const x=(gx/(W-1))*realW_m;
       const y=(gy/(H-1))*realH_m;
-      const z=(elevGrid[gy*W+gx]-minE)*EXP.exag+baseThk;
-      return [x,y,z];
+      const z2=(elevGrid[gy*W+gx]-minE)*EXP.exag+baseThk;
+      return [x,y,z2];
     }
 
     setProgress(0.73,'Building 3D mesh…','Triangulating surface + solid base');
     await sleep(30);
 
     if(EXP.fmt==='stl'){
-      /* ── STL: binary format, solid printable mesh ── */
-      /* Triangle count:
-         Top surface: (W-1)*(H-1)*2
-         South wall:  (W-1)*2
-         North wall:  (W-1)*2
-         West wall:   (H-1)*2
-         East wall:   (H-1)*2
-         Bottom:      2
-      */
       const topTri=(W-1)*(H-1)*2;
       const sideTri=(W-1)*4+(H-1)*4;
       const botTri=2;
@@ -1342,25 +1506,23 @@ async function exportMesh(){
       const buf=new ArrayBuffer(84+totalTri*50);
       const dv=new DataView(buf);
 
-      /* 80-byte header */
-      const hdr=new TextEncoder().encode('TOPO 3D Terrain — topo-explorer.html — Mapzen Terrarium DEM');
+      const hdr=new TextEncoder().encode('TOPO 3D Terrain — Glass Vault Explorer — Mapzen Terrarium DEM');
       for(let i=0;i<Math.min(80,hdr.length);i++)dv.setUint8(i,hdr[i]);
       dv.setUint32(80,totalTri,true);
 
       let off=84;
 
       function wf(v,o){dv.setFloat32(off+o,v,true);}
-      function writeTri(nx,ny,nz,ax,ay,az,bx,by,bz,cx,cy,cz){
+      function writeTri(nx,ny,nz,ax,ay,az,bx,by,bz,cx2,cy2,cz){
         wf(nx,0);wf(ny,4);wf(nz,8);
         wf(ax,12);wf(ay,16);wf(az,20);
         wf(bx,24);wf(by,28);wf(bz,32);
-        wf(cx,36);wf(cy,40);wf(cz,44);
+        wf(cx2,36);wf(cy2,40);wf(cz,44);
         dv.setUint16(off+48,0,true);
         off+=50;
       }
 
       function wt(p1,p2,p3){
-        /* Auto-compute normal from cross product */
         const ux=p2[0]-p1[0],uy=p2[1]-p1[1],uz=p2[2]-p1[2];
         const vx=p3[0]-p1[0],vy=p3[1]-p1[1],vz=p3[2]-p1[2];
         let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
@@ -1368,7 +1530,6 @@ async function exportMesh(){
         writeTri(nx/l,ny/l,nz/l,p1[0],p1[1],p1[2],p2[0],p2[1],p2[2],p3[0],p3[1],p3[2]);
       }
 
-      /* Top surface (CCW from above = outward +Z normal) */
       yieldCtr=0;
       for(let gy=0;gy<H-1;gy++){
         for(let gx=0;gx<W-1;gx++){
@@ -1385,31 +1546,26 @@ async function exportMesh(){
       setProgress(0.90,'Adding solid walls & base…','');
       await sleep(20);
 
-      /* South wall (gy=0) — outward normal: −Y */
       for(let gx=0;gx<W-1;gx++){
         const p0=pt(gx,0),p1=pt(gx+1,0);
         const b0=[p0[0],p0[1],0],b1=[p1[0],p1[1],0];
         wt(b0,b1,p1);wt(b0,p1,p0);
       }
-      /* North wall (gy=H-1) — outward normal: +Y */
       for(let gx=0;gx<W-1;gx++){
         const p0=pt(gx,H-1),p1=pt(gx+1,H-1);
         const b0=[p0[0],p0[1],0],b1=[p1[0],p1[1],0];
         wt(p0,b1,b0);wt(p0,p1,b1);
       }
-      /* West wall (gx=0) — outward normal: −X */
       for(let gy=0;gy<H-1;gy++){
         const p0=pt(0,gy),p1=pt(0,gy+1);
         const b0=[p0[0],p0[1],0],b1=[p1[0],p1[1],0];
         wt(p0,p1,b1);wt(p0,b1,b0);
       }
-      /* East wall (gx=W-1) — outward normal: +X */
       for(let gy=0;gy<H-1;gy++){
         const p0=pt(W-1,gy),p1=pt(W-1,gy+1);
         const b0=[p0[0],p0[1],0],b1=[p1[0],p1[1],0];
         wt(p1,p0,b0);wt(p1,b0,b1);
       }
-      /* Bottom face (z=0) — outward normal: −Z */
       writeTri(0,0,-1, 0,0,0, realW_m,realH_m,0, realW_m,0,0);
       writeTri(0,0,-1, 0,0,0, 0,realH_m,0, realW_m,realH_m,0);
 
@@ -1420,20 +1576,17 @@ async function exportMesh(){
       downloadBuf(buf,'model/stl',fn);
 
     }else{
-      /* ── OBJ: ASCII format with vertex normals ── */
       setProgress(0.74,'Building OBJ vertices…','');
       await sleep(20);
 
-      const lines=['# TOPO 3D Terrain Export','# Generated by TOPO Explorer','# Source: Mapzen Terrarium DEM',`# Grid: ${W}×${H} = ${W*H} vertices`,`# Real scale: ${(realW_m/1000).toFixed(2)} × ${(realH_m/1000).toFixed(2)} km`,''];
+      const lines=['# TOPO 3D Terrain Export','# Generated by TOPO Glass Vault Explorer','# Source: Mapzen Terrarium DEM',`# Grid: ${W}×${H} = ${W*H} vertices`,`# Real scale: ${(realW_m/1000).toFixed(2)} × ${(realH_m/1000).toFixed(2)} km`,''];
 
-      /* Vertices */
       yieldCtr=0;
       for(let gy=0;gy<H;gy++){
         for(let gx=0;gx<W;gx++){
-          const[x,y,z]=pt(gx,gy);
-          lines.push(`v ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
+          const[x,y,z2]=pt(gx,gy);
+          lines.push(`v ${x.toFixed(2)} ${y.toFixed(2)} ${z2.toFixed(2)}`);
         }
-        /* Base layer vertices (z=0) for walls */
         for(let gx=0;gx<W;gx++){
           const[x,y]=pt(gx,gy);
           lines.push(`v ${x.toFixed(2)} ${y.toFixed(2)} 0.00`);
@@ -1445,8 +1598,6 @@ async function exportMesh(){
       }
 
       lines.push('','g terrain');
-      /* Top surface faces (1-indexed, rows are interleaved top/base) */
-      /* Vertex index for top grid: row gy, col gx = gy*(W*2) + gx + 1 */
       const vi=(gx,gy)=>gy*(W*2)+gx+1;
       yieldCtr=0;
       for(let gy=0;gy<H-1;gy++){
@@ -1461,27 +1612,21 @@ async function exportMesh(){
         }
       }
 
-      /* Walls and bottom (base vertices: vi_b = gy*(W*2) + W + gx + 1) */
       const vb=(gx,gy)=>gy*(W*2)+W+gx+1;
       lines.push('','g walls');
       for(let gx=0;gx<W-1;gx++){
-        /* South wall */
         lines.push(`f ${vi(gx,0)} ${vb(gx+1,0)} ${vb(gx,0)}`);
         lines.push(`f ${vi(gx,0)} ${vi(gx+1,0)} ${vb(gx+1,0)}`);
-        /* North wall */
         const gy=H-1;
         lines.push(`f ${vi(gx,gy)} ${vb(gx,gy)} ${vb(gx+1,gy)}`);
         lines.push(`f ${vi(gx,gy)} ${vb(gx+1,gy)} ${vi(gx+1,gy)}`);
       }
       for(let gy=0;gy<H-1;gy++){
-        /* West wall */
         lines.push(`f ${vi(0,gy)} ${vb(0,gy)} ${vb(0,gy+1)}`);
         lines.push(`f ${vi(0,gy)} ${vb(0,gy+1)} ${vi(0,gy+1)}`);
-        /* East wall */
         lines.push(`f ${vi(W-1,gy)} ${vb(W-1,gy+1)} ${vb(W-1,gy)}`);
         lines.push(`f ${vi(W-1,gy)} ${vi(W-1,gy+1)} ${vb(W-1,gy+1)}`);
       }
-      /* Bottom face */
       lines.push('','g bottom');
       lines.push(`f ${vb(0,0)} ${vb(W-1,H-1)} ${vb(W-1,0)}`);
       lines.push(`f ${vb(0,0)} ${vb(0,H-1)} ${vb(W-1,H-1)}`);
@@ -1495,7 +1640,8 @@ async function exportMesh(){
     }
 
     setProgress(1.0,'','');
-    document.getElementById('em-step').innerHTML='<span style="color:var(--lime)">✓ Download started!</span>';
+    /* Serif "Export Successful" — Editorial New contrast */
+    document.getElementById('em-step').innerHTML='<span class="em-done">Export Successful</span>';
     document.getElementById('em-sub').textContent=`${EXP.fmt.toUpperCase()} · ${(realW_m/1000).toFixed(1)} × ${(realH_m/1000).toFixed(1)} km · scale 1m = 1m`;
     await sleep(2200);
 
@@ -1519,9 +1665,9 @@ function downloadText(text,filename){
   downloadBuf(new TextEncoder().encode(text),'text/plain',filename);
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════
    BASE MAP / OVERLAY / CONTROLS
-══════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════ */
 function setBase(name){
   whenReady(()=>{
     S.base=name;
@@ -1535,8 +1681,6 @@ function toggleOv(name){
     S[name]=!S[name];
     document.querySelector(`.ov-row[data-ov="${name}"]`).classList.toggle('on',S[name]);
     if(name==='terrain3d'){
-      /* Keep terrain source active (exaggeration:0) so queryTerrainElevation
-         keeps working for heatmap and contours even when 3D is "off" visually */
       map.setTerrain({source:'dem',exaggeration:S.terrain3d?S.exag:0});
       return;
     }
@@ -1578,14 +1722,20 @@ function preset(name){
 map.on('rotate',()=>{document.getElementById('compass-n').style.transform=`rotate(${map.getBearing()}deg)`;});
 function resetNorth(){map.easeTo({bearing:0,duration:700,easing:t=>1-Math.pow(1-t,3)});}
 
+/* ── Glass HUD — debounced at 16ms (60fps) ── */
+let _hudTimer=null;
 map.on('mousemove',e=>{
   const{lng,lat}=e.lngLat;
-  document.getElementById('ib-lng').textContent=`${Math.abs(lng).toFixed(4)}° ${lng>=0?'E':'W'}`;
-  document.getElementById('ib-lat').textContent=`${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'}`;
-  if(S.terrain3d&&map.queryTerrainElevation){
-    const el=map.queryTerrainElevation(e.lngLat,{exaggerated:false});
-    document.getElementById('ib-elev').textContent=el!==null?`${Math.round(el).toLocaleString()} m`:'— m';
-  }
+  /* Debounce elevation queries to 16ms for 60fps responsiveness */
+  if(_hudTimer)cancelAnimationFrame(_hudTimer);
+  _hudTimer=requestAnimationFrame(()=>{
+    document.getElementById('ib-lng').textContent=`${Math.abs(lng).toFixed(4)}° ${lng>=0?'E':'W'}`;
+    document.getElementById('ib-lat').textContent=`${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'}`;
+    if(S.terrain3d&&map.queryTerrainElevation){
+      const el=map.queryTerrainElevation(e.lngLat,{exaggerated:false});
+      document.getElementById('ib-elev').textContent=el!==null?`${Math.round(el).toLocaleString()} m`:'— m';
+    }
+  });
 });
 map.on('zoom',()=>document.getElementById('ib-zoom').textContent=map.getZoom().toFixed(1));
 
@@ -1657,6 +1807,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='+'||k==='=')map.zoomIn();
   else if(k==='-'||k==='_')map.zoomOut();
   else if(k==='p'||k==='P')expandPanel();
+  else if(k==='t'||k==='T')toggleTheme();
   else if(k==='1')setBase('dark');else if(k==='2')setBase('satellite');
   else if(k==='3')setBase('topo');else if(k==='4')setBase('street');
   else if(k==='d'||k==='D'){if(EXP.mode==='idle')startDraw();else if(EXP.mode==='drawing')cancelDraw();}
